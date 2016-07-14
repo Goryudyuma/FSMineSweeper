@@ -9,8 +9,8 @@ open System.Drawing
 
 
 let BombsCount = 10
-let MapHigh = 10
-let MapWidth = 10
+let MapHigh = 20
+let MapWidth = 20
 let rand = System.Random()
 
 let firstHigh = 5
@@ -43,7 +43,29 @@ module MakeBombsMap =
         removedList MapAll BombsCount
         
 
+module Main =
+    let form = new Form(Text = "ボタンテスト", Height = 600,Width = 800)
+    
+    type Square = class
+        inherit Button
+        val mutable isBomb : Boolean
+        val mutable isOpened : Boolean
+        val mutable count : int
+        new(text, top, left) = {inherit Button(Text = text, Top = top,  Left = left);isBomb = false; isOpened = false; count = 0}
+    
+        member x.changeIsBomb input = x.isBomb <- input
+    end
+    
+    let array = [|for i in 0..(MapHigh - 1) -> [|for j in 0..(MapWidth - 1) -> new Square("OK" , i * (form.Height / MapHigh) , j * (form.Width / MapWidth)) |] |]
+    
+    for i in 0..(MapHigh - 1) do
+        for j in 0..(MapWidth - 1) do
+            array.[i].[j].Click.AddHandler(fun _ _ -> (if array.[i].[j].Text = "OK" then array.[i].[j].Text <- "NG" else array.[i].[j].Text <- "OK") |> ignore)
+            form.Controls.Add(array.[i].[j])
+        done
+    done      
+
 [<EntryPoint>]
 let main argv = 
-    printfn "%A" argv
+    Application.Run(Main.form)
     0 // 整数の終了コードを返します
